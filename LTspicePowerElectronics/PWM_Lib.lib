@@ -1,0 +1,49 @@
+* Library for PWM techniques 
+
+
+.subckt BasicPWM In Out
+V4 N001 0 PWL REPEAT FOREVER (0 {Vmin} {0.5/Fs} {Vmax} {1/Fs} {Vmin}) ENDREPEAT
+A1 In N001 0 0 0 0 Out 0 SCHMITT Vhigh={Vmax} Vlow={Vmin} Ref=0
+.param Fs=20k Vmin=0 Vmax=1
+.ends BasicPWM
+
+.subckt 3phSVPWM ma mb mc Sap San Sbp Sbn Scp Scn
+V2 Vtri 0 PWL REPEAT FOREVER (0 {Vmin} {0.5/Fs} {Vmax} {1/Fs} {Vmin}) ENDREPEAT
+B4 Sap 0 V=V(ma)>=V(Vtri)
+B5 San 0 V=V(ma)<=V(Vtri)-V(Vdead)
+B6 Sbp 0 V=V(mb)>=V(Vtri)
+B7 Sbn 0 V=V(mb)<=V(Vtri)-V(Vdead)
+B8 Scp 0 V=V(mc)>=V(Vtri)
+B9 Scn 0 V=V(mc)<=V(Vtri)-V(Vdead)
+B10 Vdead 0 V=2*({Vmax}-{Vmin})*{Fs}*{DeadTime}
+.param Fs=20k DeadTime=1u Vmin=-1 Vmax=1
+.ends 3phSVPWM
+
+.subckt ComplementaryPWM In OutP OutN
+B1 OutP 0 V=V(In)>=V(Vtri)
+B2 OutN 0 V=V(In)<=V(Vtri)-V(Vdead)
+B3 Vdead 0 V=2*({Vmax}-{Vmin})*{Fs}*{DeadTime}
+V1 Vtri 0 PWL REPEAT FOREVER (0 {Vmin} {0.5/Fs} {Vmax} {1/Fs} {Vmin}) ENDREPEAT
+.param Fs=20k DeadTime=1u Vmin=0 Vmax=1
+.ends ComplementaryPWM
+
+.subckt UnipolarSPWM In S1p S1n S2p S2n
+B3 S1p 0 V=V(In)>=V(Vtri1)
+B4 S2p 0 V=V(Vtri2)>=V(In)
+V1 Vtri1 0 PWL REPEAT FOREVER (0 {Vmin} {0.5/Fs} {Vmax} {1/Fs} {Vmin}) ENDREPEAT
+B1 Vdead 0 V=2*({Vmax}-{Vmin})*{Fs}*{DeadTime}
+B2 S2n 0 V=V(Vtri2)+V(Vdead)<=V(In)
+B5 S1n 0 V=V(In)<=V(Vtri1)-V(Vdead)
+V4 Vtri2 0 PWL REPEAT FOREVER (0 {Vmax} {0.5/Fs} {Vmin} {1/Fs} {Vmax}) ENDREPEAT
+.param Fs=20k DeadTime=1u Vmin=-1 Vmax=1
+.ends UnipolarSPWM
+
+.subckt BipolarSPWM In S1p S1n S2p S2n
+B3 S1p 0 V=V(In)>=V(Vtri)
+B4 S2p 0 V=V(In)<=V(Vtri)
+V1 Vtri 0 PWL REPEAT FOREVER (0 {Vmin} {0.5/Fs} {Vmax} {1/Fs} {Vmin}) ENDREPEAT
+B1 Vdead 0 V=2*({Vmax}-{Vmin})*{Fs}*{DeadTime}
+B2 S2n 0 V=V(In)>=V(Vtri)+V(Vdead)
+B5 S1n 0 V=V(In)<=V(Vtri)-V(Vdead)
+.param Fs=20k DeadTime=1u Vmin=-1 Vmax=1
+.ends BipolarSPWM

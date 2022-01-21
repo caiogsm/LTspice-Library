@@ -1,0 +1,63 @@
+** Continuous and discrete filter blocks
+
+
+******************************************************************
+********* Continuous Filters
+******************************************************************
+.subckt 1stOrder_LowPassFilter In Out
+E1 N001 0 In 0 1
+E2 Out 0 N002 0 {K}
+R1 N002 N001 {R1}
+C1 N002 0 {C1}
+.param K=1 fc=1000 
+.param R1=1/(2*pi*fc)**2 C1=2*pi*fc
+.ends 1stOrder_LowPassFilter
+
+.subckt 2ndOrder_LowPassFilter In Out
+E1 N001 0 In 0 1
+E2 Out 0 N002 0 {K}
+L1 N001 P001 {L1} Rser=0
+R1 P001 N002 {R1}
+C1 N002 0{C1}
+.param K=1 kf=0.7 fc=1000
+.param L1=1/(2*pi*fc) C1=1/(2*pi*fc) R1=2*kf 
+.ends 1stOrder_LowPassFilter
+
+.subckt 1stOrder_HighPassFilter In Out
+E1 N001 0 In 0 1
+E2 Out 0 N002 0 {K}
+R1 0 N002 {R1}
+C1 N002 N001 {C1}
+.param K=1 fc=1000 
+.param R1=1/(2*pi*fc)**2 C1=2*pi*fc
+.ends 1stOrder_HighPassFilter
+
+.subckt 2ndOrder_HighPassFilter In Out
+E1 N001 0 In 0 1
+E2 Out 0 N002 0 {K}
+C1 N001 P001 {C1}
+R1 P001 N002 {R1}
+L1 N002 0 {L1} Rser=0
+.param K=1 kf=0.7 fc=1000
+.param L1=1/(2*pi*fc) C1=1/(2*pi*fc) R1=2*kf 
+.ends 2ndOrder_HighPassFilter
+
+.subckt 2ndOrder_BandStopFilter In Out
+E1 N001 0 In 0 1
+E2 Out 0 N002 0 {K}
+R1 N001 N002 {R1}
+C1 N002 N003 {C1}
+L1 N003 0 {L1} Rser=0
+.param K=1 fo=60 fb=20 
+.param L1=1/(2*pi*fo) C1=1/(2*pi*fo) R1=fb/fo
+.ends 2ndOrder_BandStopFilter
+
+.subckt 2ndOrder_BandPassFilter In Out
+E1 N001 0 In 0 1
+E2 Out 0 N002 0 {K}
+L1 N001 P001 {L1} Rser=0
+C1 P001 N002 {C1}
+R1 N002 0 {R1}
+.param K=1 fo=60 fb=20 
+.param L1=1/(2*pi*fo) C1=1/(2*pi*fo) R1=fb/fo
+.ends 2ndOrder_BandPassFilter
