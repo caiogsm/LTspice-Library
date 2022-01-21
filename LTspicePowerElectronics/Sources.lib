@@ -1,6 +1,0 @@
-** Sources
-
-.subckt Step N1 N2
-V3 N1 N2 PULSE(0 {Vstep} {Tstep} 1n 1n 5000 10000)
-.param Vstep=0 Tstep=0
-.ends Step
