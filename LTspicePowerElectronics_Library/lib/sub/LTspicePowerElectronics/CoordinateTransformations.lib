@@ -1,0 +1,32 @@
+** Coordinate transformations
+
+
+
+.subckt ABCtoAlphaBeta a b c al be
+E1 nvb 0 b 0 2
+E2 nvbc 0 b c 1
+E3 nvc 0 nvb nvbc 0.5
+E4 al 0 a nvc 0.6666666667
+E5 be 0 b c 0.5773502692
+.ends ABCtoAlphaBeta
+
+.subckt AlphaBetaToABC al be a b c 
+E1 a 0 al 0 1
+E2 nval 0 al 0 0.5
+E3 nvbe 0 be 0 0.8660254038
+E4 nvbe2 0 be 0 -0.8660254038
+E5 b 0 nvbe nval 1
+E6 c 0 nval nvbe2 -1
+.ends AlphaBetaToABC
+
+.subckt ABCtoDQ a b c theta d q
+B1 d 0 V=0.6666666667*((cos(V(theta))*V(a))+(cos(V(theta)-2.094395102)*V(b))+(cos(V(theta)+2.094395102)*V(c)))
+B2 q 0 V=-0.6666666667*((sin(V(theta))*V(a))+(sin(V(theta)-2.094395102)*V(b))+(sin(V(theta)+2.094395102)*V(c)))
+.ends ABCtoDQ
+
+.subckt DQtoABC d q theta a b c
+B1 a 0 V=(cos(V(theta))*V(d))-(sin(V(theta))*V(q))
+B2 b 0 V=(cos(V(theta)-2.094395102)*V(d))-(sin(V(theta)-2.094395102)*V(q))
+B3 c 0 V=(cos(V(theta)+2.094395102)*V(d))-(sin(V(theta)+2.094395102)*V(q))
+.ends DQtoABC
+
